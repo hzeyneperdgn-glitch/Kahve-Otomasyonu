@@ -1,0 +1,489 @@
+/*
+ * PROJE ADI: SANAL KAHVE OTOMASYON SİSTEMİ
+ * GELİŞTİREN: HANİFE ZEYNEP ERDOĞAN
+ * PLATFORM: Visual Studio 2026 (C)
+ * 
+ * AÇIKLAMA: Bu program, kullanıcıların farklı kahve türleri ve alt seçenekleri arasından
+ * seçim yapabildiği, tutar hesaplayan ve ödeme kontrolü gerçekleştiren bir simülasyondur.
+ */
+
+#define _CRT_SECURE_NO_WARNINGS
+#include <stdio.h>
+#include <conio.h>
+#include <stdlib.h>
+
+// ESC Onay Fonksiyonu: Kullanıcı çıkış yapmak istediğinde son bir onay alır.
+// Geri dönüş değeri: 1 = Çıkış Onaylandı, 0 = Devam Et
+int esc_onay_sor() {
+    char onay;
+    system("cls");
+    system("color F0"); // Görsel geri bildirim için renk değişimi
+    printf("\n \nCikmak istediginize emin misiniz? (E / H) \n");
+    do {
+        onay = _getch();
+        if (onay == 'E' || onay == 'e') {
+            return 1;
+        } else {
+            return 0;
+        }
+    } while (1);
+}
+
+int main() {
+    // Değişken Tanımlamaları
+    char tus;
+    int ana_secim = 0, alt_secim = 0, adet = 0;
+    int toplam_tutar = 0, odenen_tutar = 0, girilen_tutar = 0, geri_odeme = 0;
+    int kahve_fiyati = 0;
+    
+    // Akış ve Kontrol Değişkenleri
+    int iptal_bayrak = 0;
+    char karakter;
+    int sayisal_giris = 0;
+    int hata_bayrak = 0;
+
+    // Görsel Arayüz Ayarları
+    int genislik = 70;
+    int yukseklik = 15;
+
+    // ANA DÖNGÜ: Programın ana giriş ekranını kontrol eder.
+    do {
+        system("cls");
+        system("color F1"); // Mavi-Beyaz tema
+        printf(" \n \n \n \n \n \n");
+        printf("                                              %c", 201);
+        for (int i = 0; i < genislik; i++) printf("%c", 205);
+        printf("%c \n", 187);
+
+        // Karşılama Ekranı Tasarımı
+        printf(" \t \t \t \t \t      %c                                                                      %c \n", 186, 186);
+        printf(" \t \t \t \t \t      %c                     SANAL KAHVEYE HOSGELDIN                          %c \n", 186, 186);
+        printf(" \t \t \t \t \t      %c                                                                      %c \n", 186, 186);
+        printf(" \t \t \t \t \t      %c               Devam etmek icin D veya d tusuna basiniz               %c \n", 186, 186);
+        printf(" \t \t \t \t \t      %c                  CIKMAK icin ESC tusuna basiniz                      %c \n", 186, 186);
+
+        for (int i = 0; i < yukseklik; i++) {
+            printf("                                              %c", 186);
+            for (int j = 0; j < genislik; j++) printf(" ");
+            printf("%c \n", 186);
+        }
+        printf("                                              %c", 200);
+        for (int i = 0; i < genislik; i++) printf("%c", 205);
+        printf("%c", 188);
+
+        tus = _getch();
+
+        // Çıkış Kontrolü
+        if (tus == 27) {
+            if (esc_onay_sor() == 1) return 0;
+            else continue;
+        }
+        // Sipariş Süreci Başlangıcı
+        else if (tus == 'd' || tus == 'D') {
+            int ana_menu_gecerli = 0;
+            iptal_bayrak = 0;
+            hata_bayrak = 0;
+
+            // ANA MENÜ DÖNGÜSÜ: Kahve kategorilerini listeler.
+            while (ana_menu_gecerli == 0) {
+                if (hata_bayrak == 1 || iptal_bayrak == 1) {
+                    ana_menu_gecerli = 1;
+                    iptal_bayrak = 0;
+                    continue;
+                }
+
+                system("cls");
+                system("color F9");
+                printf("\n\n\n\t\t\t\t\t\t\t    KAHVE CESITLERI \n");
+                printf("\t\t\t\t\t      ----------------------------------------------------\n\n");
+                printf("\t\t\t\t\t\t  1- TURK KAHVESI                  40 TL \n");
+                printf("\t\t\t\t\t\t  2- ESPRESSO                      33 TL \n");
+                printf("\t\t\t\t\t\t  3- MOCHA                         70 TL \n");
+                printf("\t\t\t\t\t\t  4- AMERICANO                     47 TL \n");
+                printf("\t\t\t\t\t\t  5- CAPPUCINO                     52 TL \n");
+                printf("\t\t\t\t\t\t  6- CAFFE LATTE                   54 TL \n");
+                printf("\t\t\t\t\t\t  7- SICAK CIKOLATA                69 TL \n");
+                printf("\t\t\t\t\t\t  8- SALEP                         73 TL \n\n");
+                printf("\t\t\t\t\t\t  Lutfen seciminizi yapiniz: ");
+
+                // Sayısal Giriş Yakalama (Güvenli giriş mekanizması)
+                sayisal_giris = 0;
+                do {
+                    karakter = _getch();
+                    if (karakter == 27) { // ESC ile geri dönme
+                        if (esc_onay_sor() == 1) return 0;
+                        else { iptal_bayrak = 1; break; }
+                    }
+                    else if (karakter >= '0' && karakter <= '9') {
+                        printf("%c", karakter);
+                        sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                    }
+                    else if (karakter == 13) break; // ENTER
+                    else if (karakter == 8) { // BACKSPACE
+                        if (sayisal_giris > 0) {
+                            printf("\b \b");
+                            sayisal_giris /= 10;
+                        }
+                    }
+                } while (1);
+
+                if (iptal_bayrak == 1) continue;
+                ana_secim = sayisal_giris;
+
+                // ALT MENÜ SEÇİMLERİ (Switch-Case Bloğu)
+                if (ana_secim >= 1 && ana_secim <= 8) {
+                    ana_menu_gecerli = 1;
+                    alt_secim = 0;
+                    kahve_fiyati = 0;
+                    system("cls");
+                    system("color E0");
+
+                    switch (ana_secim) {
+                        case 1: // Türk Kahvesi Alt Menü
+                            printf("\n\n\t\t\t\t\t\t       TURK KAHVESI MENUSU \n");
+                            printf("\t\t\t\t      -------------------------------------------------- \n\n");
+                            printf("\t\t\t\t\t  1- SUTLU TURK KAHVESI                 49 TL \n");
+                            printf("\t\t\t\t\t  2- DAMLA SAKIZLI TURK KAHVESI         46 TL \n");
+                            printf("\t\t\t\t\t  3- CIKOLATALI TURK KAHVESI            50 TL \n");
+                            printf("\t\t\t\t\t  4- SADE TURK KAHVESI                  40 TL \n\n");
+                            printf("\t\t\t\t\t  Seciminiz: ");
+                            // ... (Giriş alma mantığı tüm case'lerde benzerdir)
+                            sayisal_giris = 0;
+                            do {
+                                karakter = _getch();
+                                if (karakter == 27) { 
+                                    if (esc_onay_sor() == 1) 
+                                        return 0; 
+                                    else {
+                                        iptal_bayrak = 1; 
+                                        break;
+                                    } 
+                                }
+                                else if (karakter >= '0' && karakter <= '9') { 
+                                    printf("%c", karakter); 
+                                    sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                                }
+                                else if (karakter == 13)
+                                    break;
+                                else if (karakter == 8 && sayisal_giris > 0) {
+                                    printf("\b \b"); 
+                                    sayisal_giris /= 10; 
+                                }
+                            } while (1);
+                            
+                            if (iptal_bayrak == 1) { 
+                                ana_menu_gecerli = 0; 
+                                continue; 
+                            }
+                            alt_secim = sayisal_giris;
+                            if (alt_secim == 1) kahve_fiyati = 49;
+                            else if (alt_secim == 2) kahve_fiyati = 46;
+                            else if (alt_secim == 3) kahve_fiyati = 50;
+                            else if (alt_secim == 4) kahve_fiyati = 40;
+                            else { system("cls"); printf("\nGecersiz secim!"); _getch(); hata_bayrak = 1; }
+                            break;
+
+                        case 2: // Espresso Alt Menü
+                            system("cls"); system("color E0");
+                            printf("\n\n\t\t\t\t\t\t     ESPRESSO MENU \n ");
+                            printf("\t\t\t\t      --------------------------------------------- \n\n");
+                            printf("\t\t\t\t\t 1- DOUBLE ESPRESSO                43TL \n");
+                            printf("\t\t\t\t\t 2- ESPRESSO MACCHIATO             40TL \n");
+                            printf("\t\t\t\t\t 3- DOUBLE ESPRESSO MACCHIATO      46TL \n");
+                            printf("\t\t\t\t\t 4- ESPRESSO                       33TL \n\n");
+                            printf("\t\t\t\t\t Seciminiz: ");
+                            sayisal_giris = 0;
+                            do {
+                                karakter = _getch();
+                                if (karakter == 27) { 
+                                    if (esc_onay_sor() == 1) 
+                                        return 0; 
+                                    else {
+                                        iptal_bayrak = 1; 
+                                        break; 
+                                    } 
+                                }
+                                else if (karakter >= '0' && karakter <= '9') { 
+                                    printf("%c", karakter); 
+                                    sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                                }
+                                else if (karakter == 13) 
+                                    break;
+                                else if (karakter == 8 && sayisal_giris > 0) {
+                                    printf("\b \b"); 
+                                    sayisal_giris /= 10;
+                                }
+                            } while (1);
+                            if (iptal_bayrak == 1) { 
+                                ana_menu_gecerli = 0;
+                                continue; 
+                            }
+                            alt_secim = sayisal_giris;
+                            if (alt_secim == 1) kahve_fiyati = 43;
+                            else if (alt_secim == 2) kahve_fiyati = 40;
+                            else if (alt_secim == 3) kahve_fiyati = 46;
+                            else if (alt_secim == 4) kahve_fiyati = 33;
+                            else { 
+                                system("cls"); 
+                                printf("\nGecersiz secim!");
+                                _getch(); 
+                                hata_bayrak = 1; 
+                            }
+                            break;
+
+                        case 3: // Mocha Alt Menü
+                            system("cls"); system("color E0");
+                            printf("\n\n\t\t\t\t\t\t      MOCHA MENU \n ");
+                            printf("\t\t\t\t      ------------------------------------------- \n\n");
+                            printf("\t\t\t\t\t  1- SADE MOCHA                    70TL \n");
+                            printf("\t\t\t\t\t  2- CIKOLATALI MOCHA              75TL \n\n");
+                            printf("\t\t\t\t\t Seciminiz: ");
+                            sayisal_giris = 0;
+
+                            do {
+                                karakter = _getch();
+                                if (karakter == 27) {
+                                    if (esc_onay_sor() == 1)
+                                        return 0; 
+                                    else {
+                                        iptal_bayrak = 1;
+                                        break; 
+                                    } 
+                                }
+                                else if (karakter >= '0' && karakter <= '9') {
+                                    printf("%c", karakter); 
+                                    sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                                }
+                                else if (karakter == 13)
+                                    break;
+                                else if (karakter == 8 && sayisal_giris > 0) { 
+                                    printf("\b \b");
+                                    sayisal_giris /= 10;
+                                }
+                            } while (1);
+                            if (iptal_bayrak == 1) { 
+                                ana_menu_gecerli = 0; 
+                                continue; 
+                            }
+                            alt_secim = sayisal_giris;
+                            if (alt_secim == 1) kahve_fiyati = 70;
+                            else if (alt_secim == 2) kahve_fiyati = 75;
+                            else { 
+                                system("cls");
+                                printf("\nGecersiz secim!"); 
+                                _getch(); 
+                                hata_bayrak = 1; 
+                            }
+                            break;
+
+                        case 4: kahve_fiyati = 47; alt_secim = 0; break;
+                        case 5: kahve_fiyati = 52; alt_secim = 0; break;
+                        case 6: kahve_fiyati = 54; alt_secim = 0; break;
+
+                        case 7: // Sıcak Çikolata Alt Menü
+                            system("cls"); system("color E0");
+                            printf("\n\n\t\t\t\t\t\t          SICAK CIKOLATA MENU \n ");
+                            printf("\t\t\t\t      -------------------------------------------- \n\n");
+                            printf("\t\t\t\t\t  1- KAHVELI SICAK CIKOLATA          69TL \n");
+                            printf("\t\t\t\t\t  2- BEYAZ SICAK CIKOLATA            73TL \n\n");
+                            printf("\t\t\t\t\t Seciminiz: ");
+                            sayisal_giris = 0;
+                            do {
+                                karakter = _getch();
+                                if (karakter == 27) { 
+                                    if (esc_onay_sor() == 1) 
+                                        return 0; 
+                                    else {
+                                        iptal_bayrak = 1;
+                                        break;
+                                    }
+                                }
+                                else if (karakter >= '0' && karakter <= '9') {
+                                    printf("%c", karakter); 
+                                    sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                                }
+                                else if (karakter == 13) 
+                                    break;
+                                else if (karakter == 8 && sayisal_giris > 0) { 
+                                    printf("\b \b");
+                                    sayisal_giris /= 10;
+                                }
+                            } while (1);
+                            if (iptal_bayrak == 1) { 
+                                ana_menu_gecerli = 0; 
+                            continue; 
+                            }
+                            alt_secim = sayisal_giris;
+                            if (alt_secim == 1) kahve_fiyati = 69;
+                            else if (alt_secim == 2) kahve_fiyati = 73;
+                            else { 
+                                system("cls");
+                                printf("\nGecersiz secim!"); 
+                                _getch();
+                                hata_bayrak = 1;
+                            }
+                            break;
+
+                        case 8: // Salep Şeker Seçimi
+                            system("cls"); system("color E0");
+                            printf("\n\n\t\t\t\t\t\t  SALEP SEKER SECIMI (Ucretsiz) \n ");
+                            printf("\t\t\t\t      ----------------------------------------------- \n\n");
+                            printf("\t\t\t\t\t  1- SEKERLI \n");
+                            printf("\t\t\t\t\t  2- SEKERSIZ \n\n");
+                            printf("\t\t\t\t\t Seciminiz: ");
+                            sayisal_giris = 0;
+                            do {
+                                karakter = _getch();
+                                if (karakter == 27) {
+                                    if (esc_onay_sor() == 1)
+                                        return 0; 
+                                    else { 
+                                        iptal_bayrak = 1;
+                                        break;
+                                    } 
+                                }
+                                else if (karakter >= '0' && karakter <= '9') {
+                                    printf("%c", karakter); 
+                                    sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                                }
+                                else if (karakter == 13) 
+                                    break;
+                                else if (karakter == 8 && sayisal_giris > 0) { 
+                                    printf("\b \b"); 
+                                    sayisal_giris /= 10; 
+                                }
+                            } 
+                            while (1);
+                            if (iptal_bayrak == 1) {
+                                ana_menu_gecerli = 0; 
+                                continue; 
+                            }
+                            alt_secim = sayisal_giris;
+                            if (alt_secim == 1 || alt_secim == 2) 
+                                kahve_fiyati = 73;
+                            else { 
+                                system("cls");
+                                printf("\nGecersiz secim!"); 
+                                _getch();
+                                hata_bayrak = 1; 
+                            }
+                            break;
+                    }
+                } else {
+                    system("cls");
+                    system("color E0");
+                    printf("\n\n\t\t\t\t\t   LUTFEN GECERLI BIR SECIM YAPINIZ (1-8)");
+                    _getch(); 
+                    hata_bayrak = 1;
+                }
+
+                if (hata_bayrak == 1 || iptal_bayrak == 1) { 
+                    ana_menu_gecerli = 0; 
+                    continue; 
+                }
+
+                // ADET VE ÖDEME KISMI
+                if (kahve_fiyati > 0) {
+                    system("cls");
+                    system("color E0");
+                    printf("\n\n\t\t\t\t\t    Kac adet istiyorsunuz? \n\n");
+                    printf("\t\t\t\t\t    Adet giriniz: ");
+
+                    sayisal_giris = 0;
+                    do {
+                        karakter = _getch();
+                        if (karakter == 27) {
+                            if (esc_onay_sor() == 1)
+                                return 0; else { 
+                                iptal_bayrak = 1; 
+                                break; 
+                            }
+                        }
+                        else if (karakter >= '0' && karakter <= '9') {
+                            printf("%c", karakter); 
+                            sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                        }
+                        else if (karakter == 13) 
+                            break;
+                        else if (karakter == 8 && sayisal_giris > 0) { 
+                            printf("\b \b");
+                            sayisal_giris /= 10; 
+                        }
+                    } 
+                    while (1);
+
+                    if (iptal_bayrak == 1) { 
+                        ana_menu_gecerli = 0; 
+                        continue;
+                    }
+                    
+                    adet = sayisal_giris;
+                    toplam_tutar = adet * kahve_fiyati;
+                    odenen_tutar = 0;
+
+                    // Ödeme Döngüsü
+                    do {
+                        system("color E0");
+                        if (odenen_tutar < toplam_tutar) {
+                            system("cls");
+                            if (odenen_tutar > 0) {
+                                printf("\n\n\t\t\t\t   ODEME YETERSIZ! Eksik tutari tamamlayiniz.\n");
+                                printf("\t\t\t\t   Toplam: %d TL | Odenen: %d TL \n", toplam_tutar, odenen_tutar);
+                                printf("\t\t\t\t   Ek ucret: ");
+                            } else {
+                                printf("\n\n\t\t\t\t   Toplam odemeniz gereken tutar: %d TL \n", toplam_tutar);
+                                printf("\t\t\t\t   Yatiracaginiz miktar: ");
+                            }
+                            
+                            sayisal_giris = 0;
+                            do {
+                                karakter = _getch();
+                                if (karakter == 27) {
+                                    if (esc_onay_sor() == 1) 
+                                        return 0; 
+                                    else { 
+                                        iptal_bayrak = 1; 
+                                        break;
+                                    } 
+                                }
+                                else if (karakter >= '0' && karakter <= '9') { 
+                                    printf("%c", karakter); 
+                                    sayisal_giris = sayisal_giris * 10 + (karakter - '0');
+                                }
+                                else if (karakter == 13) 
+                                    break;
+                                else if (karakter == 8 && sayisal_giris > 0) { 
+                                    printf("\b \b"); 
+                                    sayisal_giris /= 10;
+                                }
+                            } 
+                            while (1);
+
+                            if (iptal_bayrak == 1) { 
+                                odenen_tutar = toplam_tutar + 1; ana_menu_gecerli = 0;
+                                continue; 
+                            }
+                            odenen_tutar += sayisal_giris;
+                        }
+                    } while (odenen_tutar < toplam_tutar);
+
+                    if (iptal_bayrak == 1) 
+                        continue;
+
+                    // SİPARİŞ SONUCU (Başarılı İşlem)
+                    system("cls");
+                    system("color E0");
+                    geri_odeme = odenen_tutar - toplam_tutar;
+                    printf("\n\n\n\t\t\t\t\t %d adet icecek hazirlaniyor...\n", adet);
+                    printf("\t\t\t\t\t Toplam Tutar: %d TL \n", toplam_tutar);
+                    printf("\t\t\t\t\t Para Ustu: %d TL \n", geri_odeme);
+                    printf("\n\t\t\t\t\t AFIYET OLSUN! Yine bekleriz.\n");
+                    _getch();
+                    ana_menu_gecerli = 1;
+                }
+            }
+        }
+    } while (1);
+
+    return 0;
+}
